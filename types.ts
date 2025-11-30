@@ -30,8 +30,6 @@ export interface CollectionItem {
 
 export type SortOption = 'date_desc' | 'date_asc' | 'price_desc' | 'price_asc';
 
-// Keeping Rarity enum for backward compatibility with geminiService if needed, 
-// though it's no longer used in the main UI logic.
 export enum Rarity {
   COMMON = 'Common',
   RARE = 'Rare',

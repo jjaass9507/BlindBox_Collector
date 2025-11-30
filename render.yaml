@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: boxjoy-blindbox-collection
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist

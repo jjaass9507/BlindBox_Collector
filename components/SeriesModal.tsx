@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { X, Check, Box, Image as ImageIcon, Trash2, Hash, Star } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Check, Box, Image as ImageIcon, Trash2, Hash, Star, Camera, Upload } from 'lucide-react';
 import { Series } from '../types';
 
 interface SeriesModalProps {
@@ -18,6 +18,8 @@ const SeriesModal: React.FC<SeriesModalProps> = ({ isOpen, onClose, onSave, onDe
     totalRegular: 12,
     totalSecret: 1
   });
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -33,6 +35,17 @@ const SeriesModal: React.FC<SeriesModalProps> = ({ isOpen, onClose, onSave, onDe
       }
     }
   }, [isOpen, editSeries]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, coverImage: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +82,7 @@ const SeriesModal: React.FC<SeriesModalProps> = ({ isOpen, onClose, onSave, onDe
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto custom-scrollbar max-h-[80vh]">
             <form id="series-form" onSubmit={handleSubmit} className="space-y-6">
               
               <div>
@@ -113,23 +126,40 @@ const SeriesModal: React.FC<SeriesModalProps> = ({ isOpen, onClose, onSave, onDe
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider flex items-center gap-1">
-                    <ImageIcon size={12} /> 封面圖片網址 (URL)
+                <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex items-center gap-1">
+                    <ImageIcon size={12} /> 系列封面圖片
                 </label>
-                <input 
-                    required
-                    type="url" 
-                    value={formData.coverImage} 
-                    onChange={e => setFormData({...formData, coverImage: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl bg-dark-900 border border-white/10 focus:border-accent focus:ring-1 focus:ring-accent text-white placeholder-gray-600 outline-none transition-all"
-                    placeholder="https://..."
-                />
-                {formData.coverImage && (
-                    <div className="mt-3 h-32 w-full rounded-xl overflow-hidden border border-white/10 bg-dark-900 relative group">
-                         <img src={formData.coverImage} alt="Preview" className="w-full h-full object-cover" />
-                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
-                    </div>
-                )}
+                
+                <div 
+                    className="w-full h-48 rounded-xl overflow-hidden bg-dark-900 border-2 border-dashed border-gray-600 hover:border-accent hover:bg-dark-700 transition-all cursor-pointer relative group shadow-inner flex flex-col items-center justify-center"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                      {formData.coverImage ? (
+                          <>
+                            <img src={formData.coverImage} className="w-full h-full object-cover opacity-80 group-hover:opacity-40 transition-opacity" alt="Preview" />
+                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-black/40">
+                                <div className="flex flex-col items-center">
+                                    <Upload className="text-white mb-2" size={32} />
+                                    <span className="text-white font-bold text-sm">更換封面</span>
+                                </div>
+                             </div>
+                          </>
+                      ) : (
+                          <div className="flex flex-col items-center justify-center text-gray-500 gap-2 p-4 text-center">
+                             <Camera size={32} />
+                             <span className="text-sm font-bold uppercase">點擊上傳圖片</span>
+                             <span className="text-xs text-gray-600">支援 JPG, PNG</span>
+                          </div>
+                      )}
+                      
+                      <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        className="hidden" 
+                        accept="image/*" 
+                        onChange={handleFileChange} 
+                      />
+                </div>
               </div>
 
             </form>
@@ -144,7 +174,7 @@ const SeriesModal: React.FC<SeriesModalProps> = ({ isOpen, onClose, onSave, onDe
                     onClick={handleDelete}
                     className="px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors flex items-center gap-2 font-bold text-sm"
                  >
-                    <Trash2 size={16} /> 刪除系列
+                    <Trash2 size={16} /> 刪除
                  </button>
              )}
              {!editSeries && <div></div>} {/* Spacer */}
