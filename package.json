@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "serve -s dist -l 10000"
   },
   "dependencies": {
     "lucide-react": "^0.555.0",
@@ -14,6 +15,7 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.9.6",
     "uuid": "^13.0.0",
+    "serve": "^14.2.4",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.2.1",
